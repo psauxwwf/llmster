@@ -8,9 +8,10 @@ tasks:
     desc: create local lmstudio data directories
     silent: true
     cmds:
-      - mkdir -p ./data/models ./data/extensions
+      - mkdir -p ./data/models ./data/extensions ./data/internal
       - test -w ./data/models
       - test -w ./data/extensions
+      - test -w ./data/internal
 
   build:profile:
     internal: true
