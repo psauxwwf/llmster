@@ -9,7 +9,8 @@ x-llmster: &llmster
       "/root/.lmstudio/bin/lms server start --bind 0.0.0.0 && exec /root/.lmstudio/bin/lms log stream --source server",
     ]
   volumes:
-    - ./data/lmstudio-models:/root/.cache/lm-studio/models
+    - ./lmstudio/models:/root/.lmstudio/models/
+    - ./lmstudio/extensions/:/root/.lmstudio/extensions/
   ports:
     - 127.0.0.1:1234:1234/tcp
   healthcheck:
