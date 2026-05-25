@@ -1,80 +1,160 @@
 version: "3"
 
+vars:
+  docker_compose: docker compose --project-directory . -f docker/docker-compose.yaml
+
 tasks:
+  prepare:
+    desc: create local lmstudio data directories
+    silent: true
+    cmds:
+      - mkdir -p ./data/models ./data/extensions
+      - test -w ./data/models
+      - test -w ./data/extensions
+
+  build:profile:
+    internal: true
+    silent: true
+    requires:
+      vars: [override]
+    cmds:
+      - "{{.docker_compose}} -f {{.override}} build llmster"
+
+  push:profile:
+    internal: true
+    silent: true
+    requires:
+      vars: [override]
+    cmds:
+      - "{{.docker_compose}} -f {{.override}} push llmster"
+
+  pull:profile:
+    internal: true
+    silent: true
+    requires:
+      vars: [override]
+    cmds:
+      - "{{.docker_compose}} -f {{.override}} pull llmster"
+
+  up:profile:
+    internal: true
+    silent: true
+    requires:
+      vars: [override]
+    deps:
+      - task: prepare
+    cmds:
+      - "{{.docker_compose}} -f {{.override}} up --build -d llmster"
+
   build:cpu:
     desc: build cpu image
     silent: true
     cmds:
-      - docker compose --profile cpu build llmster
+      - "{{.docker_compose}} build llmster"
 
   build:nvidia:
     desc: build nvidia image
     silent: true
     cmds:
-      - docker compose --profile nvidia build nvidia
+      - task: build:profile
+        vars:
+          override: docker/docker-compose.nvidia.yaml
 
   build:amd:
     desc: build amd image
     silent: true
     cmds:
-      - docker compose --profile amd build amd
+      - task: build:profile
+        vars:
+          override: docker/docker-compose.amd.yaml
 
   build:intel:
     desc: build intel image
     silent: true
     cmds:
-      - docker compose --profile intel build intel
+      - task: build:profile
+        vars:
+          override: docker/docker-compose.intel.yaml
 
   build:
     desc: build all images
     silent: true
     cmds:
-      - task: build:cpu
       - task: build:nvidia
       - task: build:amd
       - task: build:intel
+      - task: build:cpu
 
   push:
     desc: push all images
     silent: true
     cmds:
-      - docker compose --profile cpu push llmster
-      - docker compose --profile nvidia push nvidia
-      - docker compose --profile amd push amd
-      - docker compose --profile intel push intel
+      - "{{.docker_compose}} push llmster"
+      - task: push:profile
+        vars:
+          override: docker/docker-compose.nvidia.yaml
+      - task: push:profile
+        vars:
+          override: docker/docker-compose.amd.yaml
+      - task: push:profile
+        vars:
+          override: docker/docker-compose.intel.yaml
+
+  pull:
+    desc: pull all images
+    silent: true
+    cmds:
+      - task: pull:profile
+        vars:
+          override: docker/docker-compose.nvidia.yaml
+      - task: pull:profile
+        vars:
+          override: docker/docker-compose.amd.yaml
+      - task: pull:profile
+        vars:
+          override: docker/docker-compose.intel.yaml
+      - "{{.docker_compose}} pull llmster"
 
   up:cpu:
-    desc: start cpu profile
+    desc: start cpu runtime
     silent: true
+    deps:
+      - task: prepare
     cmds:
-      - docker compose --profile cpu up --build -d llmster
+      - "{{.docker_compose}} up --build -d llmster"
 
   up:nvidia:
-    desc: start nvidia profile
+    desc: start nvidia runtime
     silent: true
     cmds:
-      - docker compose --profile nvidia up --build -d nvidia
+      - task: up:profile
+        vars:
+          override: docker/docker-compose.nvidia.yaml
 
   up:amd:
-    desc: start amd profile
+    desc: start amd runtime
     silent: true
     cmds:
-      - docker compose --profile amd up --build -d amd
+      - task: up:profile
+        vars:
+          override: docker/docker-compose.amd.yaml
 
   up:intel:
-    desc: start intel profile
+    desc: start intel runtime
     silent: true
     cmds:
-      - docker compose --profile intel up --build -d intel
+      - task: up:profile
+        vars:
+          override: docker/docker-compose.intel.yaml
 
   down:
     desc: stop and remove compose resources
     silent: true
     cmds:
-      - docker compose down
+      - "{{.docker_compose}} down --remove-orphans"
 
   logs:
     desc: show llmster logs
     silent: true
     cmds:
-      - docker compose logs -f
+      - "{{.docker_compose}} logs -f llmster"

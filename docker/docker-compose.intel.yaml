@@ -1,0 +1,5 @@
+services:
+  llmster:
+    image: ghcr.io/psauxwwf/llmster:intel
+    devices:
+      - /dev/dri

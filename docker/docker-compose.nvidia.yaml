@@ -1,0 +1,11 @@
+services:
+  llmster:
+    image: ghcr.io/psauxwwf/llmster:nvidia
+    build:
+      args:
+        CUDA: "1"
+        LMS_INSTALL_HOME: /root
+    gpus: all
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility

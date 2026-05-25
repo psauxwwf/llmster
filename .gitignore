@@ -1,3 +1,2 @@
-/install.sh
-/lmstudio/extensions
-/lmstudio/models/lmstudio-community/Qwen3.5-2B-GGUF
+/data/extensions
+/data/models/lmstudio-community/Qwen3.5-2B-GGUF

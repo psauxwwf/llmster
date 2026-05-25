@@ -1,0 +1,32 @@
+x-llmster: &llmster
+  container_name: llmster
+  hostname: llmster
+  restart: unless-stopped
+  platform: linux/amd64
+  entrypoint: ["sh", "-lc"]
+  command:
+    [
+      "/root/.lmstudio/bin/lms server start --bind 0.0.0.0 && exec /root/.lmstudio/bin/lms log stream --source server",
+    ]
+  volumes:
+    - ./data/models:/root/.lmstudio/models/
+    - ./data/extensions:/root/.lmstudio/extensions/
+  ports:
+    - 127.0.0.1:1234:1234/tcp
+  healthcheck:
+    test: ["CMD", "curl", "-fsS", "http://127.0.0.1:1234/v1/models"]
+    interval: 1m
+    timeout: 10s
+    start_period: 1m
+    retries: 3
+
+services:
+  llmster:
+    <<: *llmster
+    image: ghcr.io/psauxwwf/llmster:cpu
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CUDA: "0"
+        LMS_INSTALL_HOME: /root

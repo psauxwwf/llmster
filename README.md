@@ -1,64 +1,65 @@
 # llmster
 
-`llmster` packages LM Studio headless server into Docker images for four runtime profiles:
+`llmster` packages LM Studio headless server into Docker images for four runtime variants:
 
 - CPU
 - NVIDIA
 - AMD
 - Intel
 
-The repository exists to make LM Studio easier to run as a local containerized service with a small Docker Compose setup, persistent model storage, and hardware-specific profiles.
+The repository exists to make LM Studio easier to run as a local containerized service with a small Docker Compose setup, persistent model storage, and hardware-specific overrides.
 
 ## What This Project Does
 
 - Runs LM Studio in headless mode inside Docker
 - Exposes the LM Studio API on `127.0.0.1:1234`
-- Persists downloaded models in `./data/lmstudio-models`
-- Provides separate Compose profiles for CPU, NVIDIA, AMD, and Intel environments
+- Persists downloaded models in `./data/models`
+- Persists LM Studio extensions in `./data/extensions`
+- Provides separate Compose overrides for CPU, NVIDIA, AMD, and Intel environments
 - Includes Taskfile commands for maintainers who build and publish the images
 
 ## For Users
 
-Users do not need to build images locally. Pull the published image for your hardware profile and start it with Docker Compose.
+Users do not need to build images locally. Pull the published image for your hardware variant and start it with Docker Compose.
 
 ### CPU
 
 ```bash
-docker compose --profile cpu pull llmster
-docker compose --profile cpu up -d llmster
+docker compose --project-directory . -f docker/docker-compose.yaml pull llmster
+docker compose --project-directory . -f docker/docker-compose.yaml up -d llmster
 ```
 
 ### NVIDIA
 
 ```bash
-docker compose --profile nvidia pull nvidia
-docker compose --profile nvidia up -d nvidia
+docker compose --project-directory . -f docker/docker-compose.yaml -f docker/docker-compose.nvidia.yaml pull llmster
+docker compose --project-directory . -f docker/docker-compose.yaml -f docker/docker-compose.nvidia.yaml up -d llmster
 ```
 
 ### AMD
 
 ```bash
-docker compose --profile amd pull amd
-docker compose --profile amd up -d amd
+docker compose --project-directory . -f docker/docker-compose.yaml -f docker/docker-compose.amd.yaml pull llmster
+docker compose --project-directory . -f docker/docker-compose.yaml -f docker/docker-compose.amd.yaml up -d llmster
 ```
 
 ### Intel
 
 ```bash
-docker compose --profile intel pull intel
-docker compose --profile intel up -d intel
+docker compose --project-directory . -f docker/docker-compose.yaml -f docker/docker-compose.intel.yaml pull llmster
+docker compose --project-directory . -f docker/docker-compose.yaml -f docker/docker-compose.intel.yaml up -d llmster
 ```
 
 ### Stop the Service
 
 ```bash
-docker compose down
+docker compose --project-directory . -f docker/docker-compose.yaml down
 ```
 
 ### Check Logs
 
 ```bash
-docker compose logs -f
+docker compose --project-directory . -f docker/docker-compose.yaml logs -f llmster
 ```
 
 ### Test the API
@@ -92,14 +93,16 @@ docker exec -it llmster lms runtime update --all
 
 ## For Maintainers
 
-The `Taskfile.yml` is intended for image builders and publishers.
+The `Taskfile.yml` is intended for image builders and publishers and uses the same base Compose file plus hardware-specific overrides.
 
 Examples:
 
 ```bash
 task build
+task pull
 task push
 task up:cpu
+task up:nvidia
 ```
 
 ## Main Links
