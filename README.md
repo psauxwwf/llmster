@@ -54,6 +54,8 @@ The preferred backend selection is usually stored in:
 
 Mounting `LMS_INTERNAL_DIR` lets the container reuse those saved settings.
 
+When `.internal` is mounted from the host, the container recreates `llmster-install-location.json` automatically if it is missing. This keeps the daemon bootable even when the mounted directory starts empty.
+
 ## For Users
 
 Users do not need to build images locally. Pull the published image for your hardware variant and start it with Docker Compose.
@@ -147,6 +149,27 @@ If you prefer not to share the whole LM Studio state, copy only the saved load c
 - `user-concrete-model-default-config/`
 - `backend-preferences-v1.json`
 - `hardware-config.json`
+
+If you want to preserve all of the model and GPU settings discussed above, these are the key host files to copy or mount:
+
+- Per-model load settings such as `Unified KV Cache`, `Keep Model in Memory`, `Flash Attention`, context length, eval batch size, parallel sessions, CPU thread pool size, and GPU offload ratio:
+  - `~/.lmstudio/.internal/user-concrete-model-default-config/.../*.json`
+- Global GPU/backend settings such as `Offload KV Cache to GPU Memory` and `Limit Model Offload to Dedicated GPU Memory`:
+  - `~/.lmstudio/.internal/hardware-config.json`
+- Preferred backend/runtime selection:
+  - `~/.lmstudio/.internal/backend-preferences-v1.json`
+
+UI setting to file mapping:
+
+- `Unified KV Cache` -> model-specific JSON under `user-concrete-model-default-config/`
+- `RoPE Frequency Base` -> model-specific JSON under `user-concrete-model-default-config/` if explicitly overridden and saved
+- `RoPE Frequency Scale` -> model-specific JSON under `user-concrete-model-default-config/` if explicitly overridden and saved
+- `Offload KV Cache to GPU Memory` -> `~/.lmstudio/.internal/hardware-config.json`
+- `Keep Model in Memory` -> model-specific JSON under `user-concrete-model-default-config/`
+- `Try mmap()` -> model-specific JSON under `user-concrete-model-default-config/` if explicitly overridden and saved
+- `Seed` -> model-specific JSON under `user-concrete-model-default-config/` or related session config if explicitly overridden and saved
+- `Flash Attention` -> model-specific JSON under `user-concrete-model-default-config/`
+- `Limit Model Offload to Dedicated GPU Memory` -> `~/.lmstudio/.internal/hardware-config.json`
 
 Example model-specific saved load config path:
 

@@ -3,11 +3,6 @@ x-llmster: &llmster
   hostname: llmster
   restart: unless-stopped
   platform: linux/amd64
-  entrypoint: ["sh", "-lc"]
-  command:
-    [
-      "/root/.lmstudio/bin/lms server start --bind 0.0.0.0 && exec /root/.lmstudio/bin/lms log stream --source server",
-    ]
   volumes:
     - ${LMS_MODELS_DIR:-./data/models}:/root/.lmstudio/models/
     - ${LMS_EXTENSIONS_DIR:-./data/extensions}:/root/.lmstudio/extensions/

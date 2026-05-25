@@ -26,8 +26,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY install.sh /tmp/install.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /tmp/install.sh \
+    && chmod +x /usr/local/bin/entrypoint.sh \
     && LMS_FORCE_CUDA12="$CUDA" \
        LMS_TARGET_OS="$TARGETOS" \
        LMS_TARGET_ARCH="$TARGETARCH" \
@@ -37,5 +39,4 @@ RUN chmod +x /tmp/install.sh \
 
 EXPOSE 1234
 
-ENTRYPOINT ["lms"]
-CMD ["--help"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
