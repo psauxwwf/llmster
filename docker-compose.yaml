@@ -23,7 +23,7 @@ services:
   llmster:
     profiles: ["cpu"]
     <<: *llmster
-    image: lmstudio-llmster:cpu
+    image: ghcr.io/psauxwwf/llmster:cpu
     build:
       context: .
       dockerfile: Dockerfile
@@ -34,7 +34,7 @@ services:
   nvidia:
     profiles: ["nvidia"]
     <<: *llmster
-    image: lmstudio-llmster:nvidia
+    image: ghcr.io/psauxwwf/llmster:nvidia
     build:
       context: .
       dockerfile: Dockerfile
@@ -49,7 +49,7 @@ services:
   amd:
     profiles: ["amd"]
     <<: *llmster
-    image: lmstudio-llmster:amd
+    image: ghcr.io/psauxwwf/llmster:amd
     build:
       context: .
       dockerfile: Dockerfile
@@ -63,7 +63,7 @@ services:
   intel:
     profiles: ["intel"]
     <<: *llmster
-    image: lmstudio-llmster:intel
+    image: ghcr.io/psauxwwf/llmster:intel
     build:
       context: .
       dockerfile: Dockerfile

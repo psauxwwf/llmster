@@ -34,6 +34,15 @@ tasks:
       - task: build:amd
       - task: build:intel
 
+  push:
+    desc: push all images
+    silent: true
+    cmds:
+      - docker compose --profile cpu push llmster
+      - docker compose --profile nvidia push nvidia
+      - docker compose --profile amd push amd
+      - docker compose --profile intel push intel
+
   up:cpu:
     desc: start cpu profile
     silent: true
