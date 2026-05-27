@@ -45,7 +45,7 @@ tasks:
     deps:
       - task: prepare
     cmds:
-      - "{{.docker_compose}} -f {{.override}} up --build -d llmster"
+      - "{{.docker_compose}} -f {{.override}} up llmster"
 
   build:cpu:
     desc: build cpu image
