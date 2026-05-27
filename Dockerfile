@@ -14,6 +14,7 @@ RUN apt-get update \
         ca-certificates \
         curl \
         grep \
+        jq \
         libatomic1 \
         libgomp1 \
         mawk \
@@ -26,16 +27,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY install.sh /tmp/install.sh
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /tmp/install.sh \
-    && chmod +x /usr/local/bin/entrypoint.sh \
     && LMS_FORCE_CUDA12="$CUDA" \
        LMS_TARGET_OS="$TARGETOS" \
        LMS_TARGET_ARCH="$TARGETARCH" \
        LMS_INSTALL_HOME="$HOME" \
        /tmp/install.sh --no-modify-path \
     && rm -f /tmp/install.sh
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+COPY llmster-install-location.json /root
 
 EXPOSE 1234
 

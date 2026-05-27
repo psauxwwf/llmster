@@ -1,2 +1,3 @@
 /data/extensions
-/data/models/lmstudio-community/Qwen3.5-2B-GGUF
+/data/models
+/data/internal
