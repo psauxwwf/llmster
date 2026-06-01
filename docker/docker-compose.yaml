@@ -4,10 +4,9 @@ x-llmster: &llmster
   restart: unless-stopped
   platform: linux/amd64
   environment:
-    # LMS_MUST_PULL: "https://huggingface.co/HauhauCS/Qwen3.5-4B-Uncensored-HauhauCS-Aggressive https://huggingface.co/lmstudio-community/Qwen3.5-2B-GGUF"
-    LMS_MUST_PULL: ""
-    LMS_UPDATE: "true"
-    LMS_CONTEXT: "16132"
+    LMS_MUST_PULL: ${LMS_MUST_PULL:-"https://huggingface.co/HauhauCS/Qwen3.5-4B-Uncensored-HauhauCS-Aggressive https://huggingface.co/lmstudio-community/Qwen3.5-2B-GGUF"}
+    LMS_UPDATE: ${LMS_UPDATE:-true}
+    LMS_CONTEXT: ${LMS_CONTEXT:-16132}
   volumes:
     - ${LMS_MODELS_DIR:-./data/models}:/root/.lmstudio/models/
     - ${LMS_EXTENSIONS_DIR:-./data/extensions}:/root/.lmstudio/extensions/

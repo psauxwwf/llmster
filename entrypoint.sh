@@ -55,7 +55,7 @@ echo "Streaming server logs"
 exec lms log stream --source server &
 
 if [ -n "${LMS_UPDATE:-}" ]; then
-	lms runtime update --all
+	lms runtime update --all --yes
 fi
 
 if [ -n "${LMS_MUST_PULL:-}" ]; then
