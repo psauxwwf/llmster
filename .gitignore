@@ -1,3 +1,4 @@
 /data/extensions
 /data/models
 /data/internal
+/.env
