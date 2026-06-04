@@ -159,3 +159,32 @@ tasks:
     silent: true
     cmds:
       - "{{.docker_compose}} logs -f llmster"
+
+  release:
+    desc: build, create git tag, gh release, and push versioned images
+    vars:
+      VERSION:
+        sh: grep 'APP_VERSION=' install.sh | cut -d'"' -f2
+    cmds:
+      - task: build
+      - git tag "v{{.VERSION}}" 2>/dev/null || echo "Tag v{{.VERSION}} already exists"
+      - git push origin "v{{.VERSION}}" 2>/dev/null || echo "Tag v{{.VERSION}} already on remote"
+      - gh release view "v{{.VERSION}}" >/dev/null 2>&1 || gh release create "v{{.VERSION}}" --generate-notes
+      - task: tag:profile
+        vars: { variant: cpu, VERSION: "{{.VERSION}}" }
+      - task: tag:profile
+        vars: { variant: nvidia, VERSION: "{{.VERSION}}" }
+      - task: tag:profile
+        vars: { variant: amd, VERSION: "{{.VERSION}}" }
+      - task: tag:profile
+        vars: { variant: intel, VERSION: "{{.VERSION}}" }
+
+  tag:profile:
+    internal: true
+    silent: true
+    requires:
+      vars: [variant, VERSION]
+    cmds:
+      - docker tag ghcr.io/psauxwwf/llmster:{{.variant}} ghcr.io/psauxwwf/llmster:{{.VERSION}}-{{.variant}}
+      - docker push ghcr.io/psauxwwf/llmster:{{.variant}}
+      - docker push ghcr.io/psauxwwf/llmster:{{.VERSION}}-{{.variant}}

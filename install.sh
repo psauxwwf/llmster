@@ -24,7 +24,7 @@ set -u
 
 # lms config
 APP_NAME="llmster"
-APP_VERSION="0.0.14-2"
+APP_VERSION="0.0.15-2"
 APP_VARIANT="full"
 ZIP_EXT=".tar.gz"
 CHECKSUM_EXT=".sha512"
