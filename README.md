@@ -54,7 +54,8 @@ The preferred backend selection is usually stored in:
 
 Mounting `LMS_INTERNAL_DIR` lets the container reuse those saved settings.
 
-When `.internal` is mounted from the host, the container recreates `llmster-install-location.json` automatically if it is missing. This keeps the daemon bootable even when the mounted directory starts empty.
+When `.internal` is mounted from the host, the container regenerates `llmster-install-location.json` on startup. This keeps the daemon bootable even when the mounted directory starts empty.
+The file is generated on startup from the installed `llmster` binary path, so it always matches the version baked into the image.
 
 ## For Users
 
@@ -295,12 +296,16 @@ docker exec -it llmster lms runtime select "llama.cpp-linux-x86_64-nvidia-cuda-a
 
 The `Taskfile.yml` is intended for image builders and publishers and uses the same base Compose file plus hardware-specific overrides.
 
+Set `LMS_VERSION` to choose which `llmster` version is installed during the image build. You can provide it through `.env` or inline for a single command.
+
 Examples:
 
 ```bash
+LMS_VERSION=0.0.15-2 task build
 task build
 task pull
 task push
+LMS_VERSION=0.0.15-2 task release
 task up:cpu
 task up:nvidia
 ```

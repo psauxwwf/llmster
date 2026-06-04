@@ -3,6 +3,7 @@ FROM debian:13
 ARG TARGETOS
 ARG TARGETARCH
 ARG CUDA=0
+ARG LMS_VERSION=0.0.15-2
 ARG LMS_INSTALL_HOME=/root
 
 ENV HOME="${LMS_INSTALL_HOME}" \
@@ -26,9 +27,9 @@ RUN apt-get update \
        fi \
     && rm -rf /var/lib/apt/lists/*
 
-COPY install.sh /tmp/install.sh
-
-RUN chmod +x /tmp/install.sh \
+RUN curl -fsSL "https://lmstudio.ai/install.sh" -o /tmp/install.sh \
+    && chmod +x /tmp/install.sh \
+    && sed -i "s/^APP_VERSION=.*/APP_VERSION=\"${LMS_VERSION}\"/" /tmp/install.sh \
     && LMS_FORCE_CUDA12="$CUDA" \
        LMS_TARGET_OS="$TARGETOS" \
        LMS_TARGET_ARCH="$TARGETARCH" \
@@ -38,8 +39,6 @@ RUN chmod +x /tmp/install.sh \
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-
-COPY llmster-install-location.json /root
 
 EXPOSE 1234
 

@@ -29,4 +29,5 @@ services:
       dockerfile: Dockerfile
       args:
         CUDA: "0"
+        LMS_VERSION: ${LMS_VERSION:-0.0.15-2}
         LMS_INSTALL_HOME: /root

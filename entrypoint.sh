@@ -2,10 +2,11 @@
 
 set -eu
 
+LMSTUDIO_HOME="${HOME}/.lmstudio"
 SERVER_URL="http://127.0.0.1:1234/v1/models"
-SETTINGS_FILE="/root/.lmstudio/settings.json"
-INSTALL_LOCATION_FILE="/root/.lmstudio/.internal/llmster-install-location.json"
-INSTALL_LOCATION_SOURCE="/root/llmster-install-location.json"
+SETTINGS_FILE="${LMSTUDIO_HOME}/settings.json"
+INSTALL_LOCATION_FILE="${LMSTUDIO_HOME}/.internal/llmster-install-location.json"
+INSTALL_ROOT="${LMSTUDIO_HOME}/llmster"
 RUNTIME_NO_CHANGES_MSG="All matching runtime extensions are already up-to-date."
 
 wait_for_server() {
@@ -110,10 +111,25 @@ pull_models() {
 	IFS=$previous_ifs
 }
 
-if [ ! -f "$INSTALL_LOCATION_FILE" ] && [ -f "$INSTALL_LOCATION_SOURCE" ]; then
-	echo "Restoring install-location.json from $INSTALL_LOCATION_SOURCE"
-	cp "$INSTALL_LOCATION_SOURCE" "$INSTALL_LOCATION_FILE"
-fi
+write_install_location() {
+	install_binary=""
+	for candidate in "$INSTALL_ROOT"/*/llmster; do
+		[ -e "$candidate" ] || continue
+		install_binary=$candidate
+	done
+
+	if [ -z "$install_binary" ]; then
+		echo "Installed llmster binary was not found under $INSTALL_ROOT"
+		return 1
+	fi
+
+	install_dir=${install_binary%/llmster}
+	mkdir -p "${INSTALL_LOCATION_FILE%/*}"
+	printf '{"path":"%s","argv":[],"cwd":"%s"}\n' "$install_binary" "$install_dir" >"$INSTALL_LOCATION_FILE"
+	echo "Generated install-location.json for $install_binary"
+}
+
+write_install_location
 
 if [ "$#" -gt 0 ]; then
 	echo "Executing: lms $*"

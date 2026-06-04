@@ -1,11 +1,13 @@
 version: "3"
 
+dotenv: [".env"]
+
 vars:
   docker_compose: docker compose --project-directory . -f docker/docker-compose.yaml
 
 tasks:
   prepare:
-    desc: create local lmstudio data directories
+    desc: Create local LM Studio data directories.
     silent: true
     cmds:
       - mkdir -p ./data/models ./data/extensions ./data/internal
@@ -48,13 +50,13 @@ tasks:
       - "{{.docker_compose}} -f {{.override}} up --build llmster"
 
   build:cpu:
-    desc: build cpu image
+    desc: Build the CPU Docker image.
     silent: true
     cmds:
       - "{{.docker_compose}} build llmster"
 
   build:nvidia:
-    desc: build nvidia image
+    desc: Build the NVIDIA Docker image.
     silent: true
     cmds:
       - task: build:profile
@@ -62,7 +64,7 @@ tasks:
           override: docker/docker-compose.nvidia.yaml
 
   build:amd:
-    desc: build amd image
+    desc: Build the AMD Docker image.
     silent: true
     cmds:
       - task: build:profile
@@ -70,7 +72,7 @@ tasks:
           override: docker/docker-compose.amd.yaml
 
   build:intel:
-    desc: build intel image
+    desc: Build the Intel Docker image.
     silent: true
     cmds:
       - task: build:profile
@@ -78,7 +80,7 @@ tasks:
           override: docker/docker-compose.intel.yaml
 
   build:
-    desc: build all images
+    desc: Build Docker images for all hardware variants.
     silent: true
     cmds:
       - task: build:nvidia
@@ -87,7 +89,7 @@ tasks:
       - task: build:cpu
 
   push:
-    desc: push all images
+    desc: Push Docker images for all hardware variants.
     silent: true
     cmds:
       - "{{.docker_compose}} push llmster"
@@ -102,7 +104,7 @@ tasks:
           override: docker/docker-compose.intel.yaml
 
   pull:
-    desc: pull all images
+    desc: Pull published images for all hardware variants.
     silent: true
     cmds:
       - task: pull:profile
@@ -117,7 +119,7 @@ tasks:
       - "{{.docker_compose}} pull llmster"
 
   up:cpu:
-    desc: start cpu runtime
+    desc: Start the CPU container.
     silent: true
     deps:
       - task: prepare
@@ -125,7 +127,7 @@ tasks:
       - "{{.docker_compose}} up --build -d llmster"
 
   up:nvidia:
-    desc: start nvidia runtime
+    desc: Start the NVIDIA container.
     silent: true
     cmds:
       - task: up:profile
@@ -133,7 +135,7 @@ tasks:
           override: docker/docker-compose.nvidia.yaml
 
   up:amd:
-    desc: start amd runtime
+    desc: Start the AMD container.
     silent: true
     cmds:
       - task: up:profile
@@ -141,30 +143,20 @@ tasks:
           override: docker/docker-compose.amd.yaml
 
   up:intel:
-    desc: start intel runtime
+    desc: Start the Intel container.
     silent: true
     cmds:
       - task: up:profile
         vars:
           override: docker/docker-compose.intel.yaml
 
-  down:
-    desc: stop and remove compose resources
-    silent: true
-    cmds:
-      - "{{.docker_compose}} down --remove-orphans"
-
-  logs:
-    desc: show llmster logs
-    silent: true
-    cmds:
-      - "{{.docker_compose}} logs -f llmster"
-
   release:
-    desc: build, create git tag, gh release, and push versioned images
+    desc: Build, tag, release, and push versioned images.
+    preconditions:
+      - sh: test -n "${LMS_VERSION:-}"
+        msg: LMS_VERSION is required, e.g. LMS_VERSION=0.0.15-2 task release
     vars:
-      VERSION:
-        sh: grep 'APP_VERSION=' install.sh | cut -d'"' -f2
+      VERSION: "{{.LMS_VERSION}}"
     cmds:
       - task: build
       - git tag "v{{.VERSION}}" 2>/dev/null || echo "Tag v{{.VERSION}} already exists"
