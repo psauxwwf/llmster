@@ -1,4 +1,5 @@
 x-llmster: &llmster
+  init: true
   container_name: llmster
   hostname: llmster
   restart: unless-stopped

@@ -159,9 +159,8 @@ tasks:
       VERSION: "{{.LMS_VERSION}}"
     cmds:
       - task: build
-      - git tag "v{{.VERSION}}" 2>/dev/null || echo "Tag v{{.VERSION}} already exists"
-      - git push origin "v{{.VERSION}}" 2>/dev/null || echo "Tag v{{.VERSION}} already on remote"
-      - gh release view "v{{.VERSION}}" >/dev/null 2>&1 || gh release create "v{{.VERSION}}" --generate-notes
+      - >-
+        gh release create "v{{.VERSION}}" --target "$(git rev-parse HEAD)" --title "v{{.VERSION}}" --generate-notes
       - task: tag:profile
         vars: { variant: cpu, VERSION: "{{.VERSION}}" }
       - task: tag:profile
