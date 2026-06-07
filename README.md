@@ -301,11 +301,12 @@ Set `LMS_VERSION` to choose which `llmster` version is installed during the imag
 Examples:
 
 ```bash
-LMS_VERSION=0.0.15-2 task build
-task build
-task pull
-task push
-LMS_VERSION=0.0.15-2 task release
+LMS_VERSION=0.0.15-2 task image:build
+task image:build
+task image:pull
+task image:push
+LMS_VERSION=0.0.15-2 task image:publish
+LMS_VERSION=0.0.15-2 task release:create
 task up:cpu
 task up:nvidia
 ```

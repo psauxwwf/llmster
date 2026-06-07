@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "llmster version to build and release (e.g. 0.0.15-2)"
+        description: "llmster version (e.g. 0.0.15-2)"
         required: true
 
 jobs:
@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: docker/setup-buildx-action@v3
 
@@ -29,24 +31,13 @@ jobs:
         with:
           version: 3.x
 
-      - name: Set build version
-        run: |
-          printf 'LMS_VERSION=%s\n' '${{ inputs.version }}' > .env
+      - name: Publish images
+        run: task image:publish
+        env:
+          LMS_VERSION: ${{ inputs.version }}
 
-      - name: Build images
-        run: task build
-
-      - name: Tag and push images
-        run: |
-          for variant in cpu nvidia amd intel; do
-            docker image tag ghcr.io/psauxwwf/llmster:${variant} ghcr.io/psauxwwf/llmster:${{ inputs.version }}-${variant}
-            docker push ghcr.io/psauxwwf/llmster:${variant}
-            docker push ghcr.io/psauxwwf/llmster:${{ inputs.version }}-${variant}
-          done
-
-      - uses: softprops/action-gh-release@v2
-        with:
-          target_commitish: ${{ github.sha }}
-          tag_name: v${{ inputs.version }}
-          name: v${{ inputs.version }}
-          body: llmster ${{ inputs.version }}
+      - name: Create GitHub release
+        run: task release:create
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LMS_VERSION: ${{ inputs.version }}
