@@ -1,6 +1,9 @@
 services:
   llmster:
     image: ghcr.io/psauxwwf/llmster:amd
+    build:
+      cache_from:
+        - type=registry,ref=ghcr.io/psauxwwf/llmster:amd
     devices:
       - /dev/kfd
       - /dev/dri

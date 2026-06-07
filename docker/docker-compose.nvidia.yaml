@@ -5,6 +5,8 @@ services:
       args:
         CUDA: "1"
         LMS_INSTALL_HOME: /root
+      cache_from:
+        - type=registry,ref=ghcr.io/psauxwwf/llmster:nvidia
     gpus: all
     environment:
       NVIDIA_VISIBLE_DEVICES: all
