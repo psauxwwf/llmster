@@ -175,7 +175,7 @@ tasks:
     deps:
       - task: prepare
     cmds:
-      - "{{.DOCKER_COMPOSE}} up --build -d llmster"
+      - "{{.DOCKER_COMPOSE}} up --build llmster"
 
   up:nvidia:
     desc: Start the NVIDIA container.
