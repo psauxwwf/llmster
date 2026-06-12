@@ -36,6 +36,7 @@ services:
         CUDA: "0"
         LMS_VERSION: ${LMS_VERSION:-0.0.15-2}
         LMS_INSTALL_HOME: /root
-        BUILDKIT_INLINE_CACHE: "1"
       cache_from:
         - type=registry,ref=ghcr.io/psauxwwf/llmster:cpu
+      cache_to:
+        - type=inline
