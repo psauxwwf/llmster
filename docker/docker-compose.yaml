@@ -9,7 +9,7 @@ x-llmster: &llmster
       soft: -1
       hard: -1
   environment:
-    LMS_MUST_PULL: ${LMS_MUST_PULL-https://huggingface.co/mradermacher/Huihui-gemma-4-12B-it-abliterated-GGUF;https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF}
+    LMS_MUST_PULL: ${LMS_MUST_PULL:-}
     LMS_UPDATE: ${LMS_UPDATE-true}
     LMS_CONTEXT: ${LMS_CONTEXT:-16132}
   volumes:

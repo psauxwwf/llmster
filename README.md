@@ -107,6 +107,24 @@ docker compose --project-directory . -f docker/docker-compose.yaml logs -f llmst
 curl http://127.0.0.1:1234/v1/models
 ```
 
+### Pull Models on Startup
+
+To make the container download models automatically on startup, set `LMS_MUST_PULL` in `.env`.
+
+Use one model URL per line inside a single quoted value:
+
+```env
+LMS_MUST_PULL='https://huggingface.co/lmstudio-community/gemma-4-E4B-it-QAT-GGUF
+https://huggingface.co/lmstudio-community/gemma-4-12B-it-QAT-GGUF
+https://huggingface.co/unsloth/gemma-4-E4B-it-qat-GGUF'
+```
+
+Notes:
+
+- The startup script splits `LMS_MUST_PULL` by newline.
+- Leave `LMS_MUST_PULL` empty to skip automatic model downloads.
+- The pulled files are stored in `./data/models` by default, or in `LMS_MODELS_DIR` if you override it.
+
 ### Load a Model with Lower VRAM Usage
 
 The headless server does not expose load-tuning flags on `lms server start`, but LM Studio does support them when you load the model explicitly.

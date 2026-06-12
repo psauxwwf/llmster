@@ -91,8 +91,10 @@ update_runtimes() {
 pull_models() {
 	model_urls=$1
 	previous_ifs=$IFS
-	IFS=';'
+	IFS='
+	'
 	for url in $model_urls; do
+		url=$(printf '%s' "$url" | xargs)
 		[ -z "$url" ] && continue
 		for attempt in 1 2 3; do
 			echo "Pulling model: $url"
