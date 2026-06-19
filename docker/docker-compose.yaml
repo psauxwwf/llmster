@@ -4,18 +4,25 @@ x-llmster: &llmster
   hostname: llmster
   restart: unless-stopped
   platform: linux/amd64
+  ipc: host
   ulimits:
     memlock:
       soft: -1
       hard: -1
+    stack:
+      soft: 67108864
+      hard: 67108864
+    nofile:
+      soft: 1048576
+      hard: 1048576
   environment:
     LMS_MUST_PULL: ${LMS_MUST_PULL:-}
     LMS_UPDATE: ${LMS_UPDATE-true}
     LMS_CONTEXT: ${LMS_CONTEXT:-16132}
   volumes:
-    - ${LMS_MODELS_DIR:-./data/models}:/root/.lmstudio/models/
-    - ${LMS_EXTENSIONS_DIR:-./data/extensions}:/root/.lmstudio/extensions/
-    - ${LMS_INTERNAL_DIR:-./data/internal}:/root/.lmstudio/.internal/
+    - ${LMS_MODELS_DIR:-./dist/models}:/root/.lmstudio/models/
+    - ${LMS_EXTENSIONS_DIR:-./dist/extensions}:/root/.lmstudio/extensions/
+    - ${LMS_INTERNAL_DIR:-./dist/internal}:/root/.lmstudio/.internal/
   ports:
     - 127.0.0.1:1234:1234/tcp
   healthcheck:
