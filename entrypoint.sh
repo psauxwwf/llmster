@@ -13,7 +13,7 @@ wait_for_server() {
 	retries=30
 	echo "Waiting for server to be ready..."
 	while [ "$retries" -gt 0 ]; do
-		if curl -fsS "$SERVER_URL" >/dev/null 2>&1; then
+		if curl -fsS "$SERVER_URL" > /dev/null 2>&1; then
 			echo "Server is ready"
 			return 0
 		fi
@@ -27,16 +27,16 @@ wait_for_server() {
 is_enabled() {
 	value=${1:-}
 	case "$value" in
-	true | yes | 1) return 0 ;;
-	*) return 1 ;;
+		true | yes | 1) return 0 ;;
+		*) return 1 ;;
 	esac
 }
 
 has_models_to_pull() {
 	value=${1:-}
 	case "$value" in
-	"" | '""') return 1 ;;
-	*) return 0 ;;
+		"" | '""') return 1 ;;
+		*) return 0 ;;
 	esac
 }
 
@@ -51,33 +51,33 @@ patch_context() {
 
 	if [ "$context_value" = "0" ]; then
 		echo "Patching defaultContextLength: type=max"
-		jq '.defaultContextLength.type = "max"' "$SETTINGS_FILE" >"$tmp_file"
+		jq '.defaultContextLength.type = "max"' "$SETTINGS_FILE" > "$tmp_file"
 		mv "$tmp_file" "$SETTINGS_FILE"
 		return 0
 	fi
 
 	echo "Patching defaultContextLength: type=custom, value=$context_value"
-	jq --arg v "$context_value" '.defaultContextLength.type = "custom" | .defaultContextLength.value = ($v | tonumber)' "$SETTINGS_FILE" >"$tmp_file"
+	jq --arg v "$context_value" '.defaultContextLength.type = "custom" | .defaultContextLength.value = ($v | tonumber)' "$SETTINGS_FILE" > "$tmp_file"
 	mv "$tmp_file" "$SETTINGS_FILE"
 }
 
 update_runtimes() {
 	for attempt in 1 2 3; do
 		echo "Refreshing runtime catalog..."
-		lms runtime get --list --allow-incompatible >/dev/null 2>&1 || true
+		lms runtime get --list --allow-incompatible > /dev/null 2>&1 || true
 		sleep 2
 
 		echo "Checking updates for installed runtimes..."
 		if output=$(lms runtime update --all --yes --allow-incompatible 2>&1); then
 			printf '%s\n' "$output"
 			case "$output" in
-			*"$RUNTIME_NO_CHANGES_MSG"*)
-				if [ "$attempt" -lt 3 ]; then
-					echo "Runtime update returned no changes, retrying..."
-					sleep 5
-					continue
-				fi
-				;;
+				*"$RUNTIME_NO_CHANGES_MSG"*)
+					if [ "$attempt" -lt 3 ]; then
+						echo "Runtime update returned no changes, retrying..."
+						sleep 5
+						continue
+					fi
+					;;
 			esac
 			return 0
 		fi
@@ -127,7 +127,7 @@ write_install_location() {
 
 	install_dir=${install_binary%/llmster}
 	mkdir -p "${INSTALL_LOCATION_FILE%/*}"
-	printf '{"path":"%s","argv":[],"cwd":"%s"}\n' "$install_binary" "$install_dir" >"$INSTALL_LOCATION_FILE"
+	printf '{"path":"%s","argv":[],"cwd":"%s"}\n' "$install_binary" "$install_dir" > "$INSTALL_LOCATION_FILE"
 	echo "Generated install-location.json for $install_binary"
 }
 
